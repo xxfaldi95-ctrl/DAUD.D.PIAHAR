@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Perencanaan Instalasi FTTH - Daud Dedy Piahar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #0f172a;
+            --accent: #06b6d4;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Navigation */
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 1.25rem 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .brand-text h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-text p {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .developer-badge {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .developer-badge i {
+            color: #38bdf8;
+        }
+
+        /* Main Container */
+        main {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .page-title {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--secondary);
+        }
+
+        .page-title p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-add {
+            background-color: #0d9488;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+
+        .btn-add:hover {
+            background-color: #0f766e;
+        }
+
+        .btn-remove {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            align-self: flex-end;
+            margin-bottom: 2px;
+        }
+
+        .btn-remove:hover {
+            background-color: #dc2626;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .section-header i {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .section-header h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            outline: none;
+            font-size: 0.9rem;
+            background: #f8fafc;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        /* Component Boxes */
+        .component-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .component-title {
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.95rem;
+        }
+
+        .dynamic-item {
+            background: #ffffff;
+            border: 1px dashed var(--border);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+
+        /* PDF Container (Render hidden) */
+        #pdf-preview {
+            display: none;
+            background: white;
+            padding: 40px;
+            color: #1e293b;
+        }
+
+        .pdf-header {
+            text-align: center;
+            border-bottom: 3px double #0f172a;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .pdf-header h2 {
+            font-size: 16pt;
+            color: #0f172a;
+            text-transform: uppercase;
+        }
+
+        .pdf-header p {
+            font-size: 9pt;
+            color: #64748b;
+        }
+
+        .pdf-meta-table {
+            width: 100%;
+            margin-bottom: 25px;
+            border-collapse: collapse;
+        }
+
+        .pdf-meta-table td {
+            padding: 6px 10px;
+            font-size: 9pt;
+        }
+
+        .pdf-meta-table td.label {
+            font-weight: bold;
+            width: 20%;
+            background: #f1f5f9;
+        }
+
+        .pdf-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8pt;
+            margin-top: 15px;
+        }
+
+        .pdf-data-table th, .pdf-data-table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 8px;
+            text-align: left;
+        }
+
+        .pdf-data-table th {
+            background-color: #1e293b;
+            color: white;
+            font-weight: 600;
+        }
+
+        .pdf-footer {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9pt;
+        }
+
+        .signature-box {
+            text-align: center;
+            width: 200px;
+        }
+
+        .signature-space {
+            height: 60px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container { flex-direction: column; gap: 10px; }
+            .form-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>FTTH Design Planner</h1>
+                    <p>Sistem Perencanaan & Dokumentasi Fiber Optik</p>
+                </div>
+            </div>
+            <div class="developer-badge">
+                <i class="fa-solid fa-code"></i>
+                <span>Pembuat Web: <strong>Daud Dedy Piahar</strong></span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="page-title">
+            <div>
+                <h2>Form Perencanaan FTTH</h2>
+                <p>Berdasarkan Peta As Planned Drawing</p>
+            </div>
+            <div class="actions">
+                <button type="button" onclick="resetForm()" class="btn btn-outline">
+                    <i class="fa-solid fa-rotate-left"></i> Reset Form
+                </button>
+                <button type="button" onclick="generatePDF()" class="btn btn-primary">
+                    <i class="fa-solid fa-file-pdf"></i> Download Hasil (PDF)
+                </button>
+            </div>
+        </div>
+
+        <form id="ftthForm" class="form-card">
+            
+            <div class="section-header">
+                <i class="fa-solid fa-folder-open"></i>
+                <h3>Informasi Umum Proyek</h3>
+            </div>
+            <div class="grid">
+                <div class="form-group">
+                    <label>Nama Perencana / Drafter</label>
+                    <input type="text" id="nama" value="Daud Dedy Piahar" placeholder="Nama perencana...">
+                </div>
+                <div class="form-group">
+                    <label>Tanggal Perencanaan</label>
+                    <input type="date" id="tanggal">
+                </div>
+                <div class="form-group">
+                    <label>Nama Perusahaan / Kontraktor</label>
+                    <input type="text" id="namaPerusahaan" placeholder="Contoh: PT. Fiber Jaya Teknindo">
+                </div>
+                <div class="form-group">
+                    <label>Nama ISP (Provider)</label>
+                    <input type="text" id="namaIsp" placeholder="Contoh: Telkom / Indihome / Biznet">
+                </div>
+                <div class="form-group">
+                    <label>Kapasitas ODF</label>
+                    <input type="text" id="kapasitasOdf" placeholder="Contoh: 144 Core / 288 Core">
+                </div>
+            </div>
+
+            <div class="section-header">
+                <i class="fa-solid fa-server"></i>
+                <h3>Infrastruktur OLT & ODC</h3>
+            </div>
+            <div class="grid">
+                <!-- OLT Container -->
+                <div class="component-box">
+                    <div class="component-title">
+                        <span><i class="fa-solid fa-microchip"></i> Node OLT (Optical Line Terminal)</span>
+                        <button type="button" class="btn btn-add" onclick="addItem('olt-container', 'olt')">+ Tambah OLT</button>
+                    </div>
+                    <div id="olt-container"></div>
+                </div>
+
+                <!-- ODC Container -->
+                <div class="component-box">
+                    <div class="component-title">
+                        <span><i class="fa-solid fa-box-archive"></i> Node ODC (Optical Distribution Cabinet)</span>
+                        <button type="button" class="btn btn-add" onclick="addItem('odc-container', 'odc')">+ Tambah ODC</button>
+                    </div>
+                    <div id="odc-container"></div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <i class="fa-solid fa-sitemap"></i>
+                <h3>ODP, Tiang, & Pelanggan (Rumah)</h3>
+            </div>
+            <div class="grid">
+                <!-- ODP Container -->
+                <div class="component-box">
+                    <div class="component-title">
+                        <span><i class="fa-solid fa-box"></i> Node ODP</span>
+                        <button type="button" class="btn btn-add" onclick="addItem('odp-container', 'odp')">+ Tambah ODP</button>
+                    </div>
+                    <div id="odp-container"></div>
+                </div>
+
+                <!-- Tiang Container -->
+                <div class="component-box">
+                    <div class="component-title">
+                        <span><i class="fa-solid fa-tower-cell"></i> Tiang Fiber Optik</span>
+                        <button type="button" class="btn btn-add" onclick="addItem('tiang-container', 'tiang')">+ Tambah Tiang</button>
+                    </div>
+                    <div id="tiang-container"></div>
+                </div>
+
+                <!-- Rumah Container -->
+                <div class="component-box">
+                    <div class="component-title">
+                        <span><i class="fa-solid fa-house"></i> Target Customer / Rumah</span>
+                        <button type="button" class="btn btn-add" onclick="addItem('rumah-container', 'rumah')">+ Tambah Customer</button>
+                    </div>
+                    <div id="rumah-container"></div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <i class="fa-solid fa-plug"></i>
+                <h3>Spesifikasi & Panjang Kabel</h3>
+            </div>
+            <div class="grid">
+                <!-- Kabel Feeder Container -->
+                <div class="component-box">
+                    <div class="component-title">
+                        <span><i class="fa-solid fa-bolt"></i> Kabel Feeder</span>
+                        <button type="button" class="btn btn-add" onclick="addItem('feeder-container', 'feeder')">+ Tambah Feeder</button>
+                    </div>
+                    <div id="feeder-container"></div>
+                </div>
+
+                <!-- Kabel Distribusi Container -->
+                <div class="component-box">
+                    <div class="component-title">
+                        <span><i class="fa-solid fa-code-branch"></i> Kabel Distribusi</span>
+                        <button type="button" class="btn btn-add" onclick="addItem('distribusi-container', 'distribusi')">+ Tambah Distribusi</button>
+                    </div>
+                    <div id="distribusi-container"></div>
+                </div>
+
+                <!-- Kabel Dropcore Container -->
+                <div class="component-box">
+                    <div class="component-title">
+                        <span><i class="fa-solid fa-cable-car"></i> Kabel Dropcore</span>
+                        <button type="button" class="btn btn-add" onclick="addItem('dropcore-container', 'dropcore')">+ Tambah Dropcore</button>
+                    </div>
+                    <div id="dropcore-container"></div>
+                </div>
+            </div>
+
+        </form>
+    </main>
+
+    <div id="pdf-preview">
+        <div class="pdf-header">
+            <h2>Laporan Perencanaan Instalasi Fiber To The Home (FTTH)</h2>
+            <p>Dokumen Hasil Desain Peta As Planned Drawing - Fiber Optic Infrastructure</p>
+        </div>
+
+        <table class="pdf-meta-table">
+            <tr>
+                <td class="label">Pembuat Web / Perencana:</td>
+                <td id="pdf-nama">Daud Dedy Piahar</td>
+                <td class="label">Tanggal:</td>
+                <td id="pdf-tanggal">-</td>
+            </tr>
+            <tr>
+                <td class="label">Nama Perusahaan:</td>
+                <td id="pdf-perusahaan">-</td>
+                <td class="label">Nama ISP:</td>
+                <td id="pdf-isp">-</td>
+            </tr>
+            <tr>
+                <td class="label">Kapasitas ODF:</td>
+                <td id="pdf-odf" colspan="3">-</td>
+            </tr>
+        </table>
+
+        <h3 style="font-size:10pt; margin-bottom:8px; color:#0f172a; border-left: 4px solid #2563eb; padding-left: 8px;">1. Detail Infrastruktur Node & Perangkat</h3>
+        <table class="pdf-data-table">
+            <thead>
+                <tr>
+                    <th>Komponen</th>
+                    <th>Kode ID</th>
+                    <th>Lokasi</th>
+                    <th>Kapasitas</th>
+                    <th>Keterangan Pekerjaan</th>
+                </tr>
+            </thead>
+            <tbody id="pdf-table-node">
+                <!-- Dinamis diisi via JavaScript -->
+            </tbody>
+        </table>
+
+        <h3 style="font-size:10pt; margin-top:15px; margin-bottom:8px; color:#0f172a; border-left: 4px solid #2563eb; padding-left: 8px;">2. Detail Penggunaan & Spesifikasi Kabel FO</h3>
+        <table class="pdf-data-table">
+            <thead>
+                <tr>
+                    <th>Kategori Kabel</th>
+                    <th>Spesifikasi Kabel</th>
+                    <th>Panjang Kabel</th>
+                    <th>Keterangan Pekerjaan</th>
+                </tr>
+            </thead>
+            <tbody id="pdf-table-kabel">
+                <!-- Dinamis diisi via JavaScript -->
+            </tbody>
+        </table>
+
+        <div class="pdf-footer">
+            <div class="signature-box">
+                <p>Disetujui Oleh,</p>
+                <div class="signature-space"></div>
+                <p><strong>( Field Manager / SPV )</strong></p>
+            </div>
+            <div class="signature-box">
+                <p>Direncanakan Oleh,</p>
+                <div class="signature-space"></div>
+                <p><strong id="pdf-signature-name">Daud Dedy Piahar</strong></p>
+                <p style="font-size: 8pt; color: #64748b;">FTTH Network Designer</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Sistem Perencanaan Instalasi Fiber Optic - Created by <strong>Daud Dedy Piahar</strong>. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Set tanggal otomatis ke hari ini
+        document.getElementById('tanggal').valueAsDate = new Date();
+
+        // Fungsi Generik untuk Menambah Input Form Item Dinamis
+        function addItem(containerId, type) {
+            const container = document.getElementById(containerId);
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'dynamic-item ' + type + '-item';
+
+            let html = '';
+            if (type === 'olt') {
+                html = `
+                    <div class="form-group"><label>Kode OLT</label><input type="text" class="olt-kode" placeholder="e.g. OLT-JKT-01"></div>
+                    <div class="form-group"><label>Lokasi OLT</label><input type="text" class="olt-lokasi" placeholder="e.g. STO Gambir Lt. 2"></div>
+                `;
+            } else if (type === 'odc') {
+                html = `
+                    <div class="form-group"><label>Kode ODC</label><input type="text" class="odc-kode" placeholder="e.g. ODC-GBR-01"></div>
+                    <div class="form-group"><label>Lokasi ODC</label><input type="text" class="odc-lokasi" placeholder="e.g. Jl. Merdeka Barat No. 12"></div>
+                    <div class="form-group"><label>Kapasitas ODC</label><input type="text" class="odc-kapasitas" placeholder="e.g. 96 Core"></div>
+                    <div class="form-group"><label>Keterangan Pekerjaan ODC</label><input type="text" class="odc-ket" placeholder="e.g. Pemasangan ODC Baru"></div>
+                `;
+            } else if (type === 'odp') {
+                html = `
+                    <div class="form-group"><label>Kode ODP</label><input type="text" class="odp-kode" placeholder="e.g. ODP-GBR-01/01"></div>
+                    <div class="form-group"><label>Lokasi ODP</label><input type="text" class="odp-lokasi" placeholder="e.g. Tiang TP-01 Jl. Merdeka"></div>
+                    <div class="form-group"><label>Kapasitas ODP</label><input type="text" class="odp-kapasitas" placeholder="e.g. 8 Port / 16 Port"></div>
+                    <div class="form-group"><label>Keterangan Pekerjaan ODP</label><input type="text" class="odp-ket" placeholder="e.g. Installation & Splicing"></div>
+                `;
+            } else if (type === 'tiang') {
+                html = `
+                    <div class="form-group"><label>Kode Tiang</label><input type="text" class="tiang-kode" placeholder="e.g. TP-7M-01"></div>
+                    <div class="form-group"><label>Lokasi Tiang</label><input type="text" class="tiang-lokasi" placeholder="e.g. Depan Rumah No. 4"></div>
+                    <div class="form-group"><label>Keterangan Pekerjaan Tiang</label><input type="text" class="tiang-ket" placeholder="e.g. Penancapan Tiang 7 Meter"></div>
+                `;
+            } else if (type === 'rumah') {
+                html = `
+                    <div class="form-group"><label>Kode Rumah / ID Pelanggan</label><input type="text" class="rumah-kode" placeholder="e.g. CUST-001"></div>
+                    <div class="form-group"><label>Lokasi Rumah</label><input type="text" class="rumah-lokasi" placeholder="e.g. Blok A3 No. 12"></div>
+                    <div class="form-group"><label>Keterangan Pekerjaan Rumah</label><input type="text" class="rumah-ket" placeholder="e.g. Tarik Drop Core + Install ROS"></div>
+                `;
+            } else if (type === 'feeder' || type === 'distribusi' || type === 'dropcore') {
+                html = `
+                    <div class="form-group"><label>Tipe / Spesifikasi Kabel</label><input type="text" class="${type}-spesifikasi" placeholder="Spesifikasi kabel..."></div>
+                    <div class="form-group"><label>Panjang Kabel (Meter)</label><input type="number" class="${type}-panjang" placeholder="Panjang..."></div>
+                    <div class="form-group"><label>Keterangan Pekerjaan</label><input type="text" class="${type}-ket" placeholder="Keterangan..."></div>
+                `;
+            }
+
+            html += `<button type="button" class="btn-remove" onclick="removeItem(this)"><i class="fa-solid fa-trash"></i> Hapus Item</button>`;
+            itemDiv.innerHTML = html;
+            container.appendChild(itemDiv);
+        }
+
+        // Fungsi Menghapus Baris Item
+        function removeItem(button) {
+            const container = button.parentElement.parentElement;
+            if (container.children.length > 1) {
+                button.parentElement.remove();
+            } else {
+                alert("Setidaknya harus ada 1 item terisi!");
+            }
+        }
+
+        // Inisialisasi awal 1 item default untuk tiap kategori
+        function initForm() {
+            document.getElementById('olt-container').innerHTML = '';
+            document.getElementById('odc-container').innerHTML = '';
+            document.getElementById('odp-container').innerHTML = '';
+            document.getElementById('tiang-container').innerHTML = '';
+            document.getElementById('rumah-container').innerHTML = '';
+            document.getElementById('feeder-container').innerHTML = '';
+            document.getElementById('distribusi-container').innerHTML = '';
+            document.getElementById('dropcore-container').innerHTML = '';
+
+            addItem('olt-container', 'olt');
+            addItem('odc-container', 'odc');
+            addItem('odp-container', 'odp');
+            addItem('tiang-container', 'tiang');
+            addItem('rumah-container', 'rumah');
+            addItem('feeder-container', 'feeder');
+            addItem('distribusi-container', 'distribusi');
+            addItem('dropcore-container', 'dropcore');
+        }
+
+        initForm();
+
+        function resetForm() {
+            if(confirm('Apakah Anda yakin ingin mengosongkan seluruh isi form?')) {
+                document.getElementById('ftthForm').reset();
+                initForm();
+                document.getElementById('nama').value = "Daud Dedy Piahar";
+                document.getElementById('tanggal').valueAsDate = new Date();
+            }
+        }
+
+        function generatePDF() {
+            // Informasi Utama
+            document.getElementById('pdf-nama').innerText = document.getElementById('nama').value || '-';
+            document.getElementById('pdf-signature-name').innerText = document.getElementById('nama').value || 'Daud Dedy Piahar';
+            document.getElementById('pdf-tanggal').innerText = document.getElementById('tanggal').value || '-';
+            document.getElementById('pdf-perusahaan').innerText = document.getElementById('namaPerusahaan').value || '-';
+            document.getElementById('pdf-isp').innerText = document.getElementById('namaIsp').value || '-';
+            document.getElementById('pdf-odf').innerText = document.getElementById('kapasitasOdf').value || '-';
+
+            // Populate Tabel Node
+            const nodeTable = document.getElementById('pdf-table-node');
+            nodeTable.innerHTML = '';
+
+            const nodeTypes = [
+                { type: 'olt', label: 'OLT' },
+                { type: 'odc', label: 'ODC' },
+                { type: 'odp', label: 'ODP' },
+                { type: 'tiang', label: 'Tiang FO' },
+                { type: 'rumah', label: 'Target Rumah / Pelanggan' }
+            ];
+
+            nodeTypes.forEach(node => {
+                const items = document.querySelectorAll('.' + node.type + '-item');
+                items.forEach((item, index) => {
+                    const kode = item.querySelector('.' + node.type + '-kode')?.value || '-';
+                    const lokasi = item.querySelector('.' + node.type + '-lokasi')?.value || '-';
+                    const kapasitas = item.querySelector('.' + node.type + '-kapasitas')?.value || '-';
+                    const ket = item.querySelector('.' + node.type + '-ket')?.value || '-';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${node.label} ${items.length > 1 ? '#' + (index + 1) : ''}</strong></td>
+                        <td>${kode}</td>
+                        <td>${lokasi}</td>
+                        <td>${kapasitas}</td>
+                        <td>${ket}</td>
+                    `;
+                    nodeTable.appendChild(row);
+                });
+            });
+
+            // Populate Tabel Kabel
+            const kabelTable = document.getElementById('pdf-table-kabel');
+            kabelTable.innerHTML = '';
+
+            const kabelTypes = [
+                { type: 'feeder', label: 'Kabel Feeder' },
+                { type: 'distribusi', label: 'Kabel Distribusi' },
+                { type: 'dropcore', label: 'Kabel Dropcore' }
+            ];
+
+            kabelTypes.forEach(kabel => {
+                const items = document.querySelectorAll('.' + kabel.type + '-item');
+                items.forEach((item, index) => {
+                    const spek = item.querySelector('.' + kabel.type + '-spesifikasi')?.value || '-';
+                    const panjangVal = item.querySelector('.' + kabel.type + '-panjang')?.value;
+                    const panjang = panjangVal ? panjangVal + ' Meter' : '-';
+                    const ket = item.querySelector('.' + kabel.type + '-ket')?.value || '-';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${kabel.label} ${items.length > 1 ? '#' + (index + 1) : ''}</strong></td>
+                        <td>${spek}</td>
+                        <td>${panjang}</td>
+                        <td>${ket}</td>
+                    `;
+                    kabelTable.appendChild(row);
+                });
+            });
+
+            // Proses Cetak ke PDF
+            const element = document.getElementById('pdf-preview');
+            element.style.display = 'block';
+
+            html2canvas(element, { scale: 2, useCORS: true }).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                const imgWidth = 210;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                pdf.save(`FTTH_Planner_${document.getElementById('namaIsp').value || 'Daud_Dedy_Piahar'}.pdf`);
+
+                element.style.display = 'none';
+            }).catch(err => {
+                console.error("Gagal cetak PDF: ", err);
+                alert("Terjadi kesalahan saat generate dokumen PDF.");
+                element.style.display = 'none';
+            });
+        }
+    </script>
+</body>
+</html>
